@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+<meta charset="UTF-8">
+<title>Tuumat Milleiksi 1.0</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        max-width: 450px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    h1 {
+        color: #333;
+    }
+    a {
+        color: blue;
+        text-decoration: none;
+    }
+    #results {
+        margin-top: 15px;
+        white-space: pre-line;
+        font-family: monospace;
+    }
+    input, button {
+        padding: 6px 10px;
+        font-size: 16px;
+    }
+</style>
+</head>
+<body>
+
+<h2><a href="https://www.youtube.com/@torala" target="_blank">www.youtube.com/@torala</a></h2>
+
+<h1>Tuumat milleiksi</h1>
+<p></p>
+<p>Voit syöttää tuumat murtolukuina esim. 7/8, sekalukuina 2 7/8, tai desimaaleina 0,875 tai .875</p>
+
+<input id="inputField" type="text" placeholder="Syötä tuumat">
+<button onclick="convert()">Muunna</button>
+
+<div id="results"></div>
+
+<script>
+document.getElementById("inputField").addEventListener("keydown", function(e) {
+    if (e.key === "Enter") {
+        convert();
+    }
+});
+
+let results = [];
+
+function convert() {
+    const input = document.getElementById("inputField").value.trim();
+    const original = input;
+    let inches = null;
+
+    // Murtoluku X/Y
+    let fraction = input.match(/^(\d+)\/(\d+)$/);
+    if (fraction) {
+        inches = parseFloat(fraction[1]) / parseFloat(fraction[2]);
+    }
+
+    // Desimaali (myös pilkulla)
+    if (inches === null) {
+        let decimal = input.replace(",", ".");
+        if (/^\d*[.]?\d+$/.test(decimal)) {
+            inches = parseFloat(decimal);
+        }
+    }
+
+    // Sekaluku "X Y/Z"
+    if (inches === null) {
+        let mixed = input.match(/^(\d+)\s*(\d+)\/(\d+)$/);
+        if (mixed) {
+            inches = parseFloat(mixed[1]) +
+                     parseFloat(mixed[2]) / parseFloat(mixed[3]);
+        }
+    }
+
+    if (inches === null) {
+        alert("Virheellinen syöte");
+        //document.getElementById("inputField").value = "";
+        return;
+    }
+
+    const mm = inches * 25.4;
+    const resultText = `${original}" = ${mm.toFixed(3)} mm`;
+
+    results.unshift(resultText);
+    if (results.length > 10) results.pop();
+
+    document.getElementById("results").innerText = results.join("\n");
+    document.getElementById("inputField").value = "";
+}
+</script>
+
+</body>
+</html>
+
